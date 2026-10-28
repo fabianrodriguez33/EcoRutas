@@ -53,7 +53,8 @@ SELECT * FROM ruta_local LIMIT 1;
 
 observarPuntos:
 SELECT * FROM punto_estado
-WHERE :texto = '' OR razon_social LIKE '%' || :texto || '%' OR direccion LIKE '%' || :texto || '%' OR zona LIKE '%' || :texto || '%'
+WHERE (:texto = '' OR razon_social LIKE '%' || :texto || '%' OR direccion LIKE '%' || :texto || '%' OR zona LIKE '%' || :texto || '%')
+  AND (:soloPendientes = 0 OR atendido = 0)
 ORDER BY secuencia;
 
 observarPunto:

@@ -23,8 +23,9 @@ class BaseLocal(private val db: EcoDatabase) {
     fun observarRuta(): Flow<RutaInfo?> =
         q.observarRuta(::aRutaInfo).asFlow().mapToOneOrNull(Dispatchers.Default)
 
-    fun observarPuntos(texto: String): Flow<List<PuntoAcopio>> =
-        q.observarPuntos(texto, ::aPunto).asFlow().mapToList(Dispatchers.Default)
+    /** El filtro «solo pendientes de pesar» se resuelve en la consulta y se combina con el buscador. */
+    fun observarPuntos(texto: String, soloPendientes: Boolean = false): Flow<List<PuntoAcopio>> =
+        q.observarPuntos(texto, soloPendientes.aEntero(), ::aPunto).asFlow().mapToList(Dispatchers.Default)
 
     fun observarPunto(id: Long): Flow<PuntoAcopio?> =
         q.observarPunto(id, ::aPunto).asFlow().mapToOneOrNull(Dispatchers.Default)
