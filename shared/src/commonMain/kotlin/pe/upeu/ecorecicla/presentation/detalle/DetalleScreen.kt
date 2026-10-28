@@ -168,6 +168,9 @@ private fun FilaPesaje(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            pesaje.humedadEstimada?.let {
+                Text("Humedad estimada: ${formatear(it)} %", style = MaterialTheme.typography.bodySmall)
+            }
             pesaje.observacion?.let { Text("Obs.: $it", style = MaterialTheme.typography.bodySmall) }
             anulado?.let { Text("Motivo: ${it.motivo}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
             pesaje.errorEnvio?.let {

@@ -77,6 +77,10 @@ fun FormularioScreen(
             )
             Campo("Tara (kg)", estado.tara, estado.errores["tara"], !estado.guardando, viewModel::cambiarTara, KeyboardType.Decimal)
             Campo(
+                "Humedad estimada % (opcional)", estado.humedad, estado.errores["humedadEstimada"], !estado.guardando,
+                viewModel::cambiarHumedad, KeyboardType.Decimal
+            )
+            Campo(
                 "Observación (opcional)", estado.observacion, estado.errores["observacion"], !estado.guardando,
                 viewModel::cambiarObservacion, singleLine = false
             )

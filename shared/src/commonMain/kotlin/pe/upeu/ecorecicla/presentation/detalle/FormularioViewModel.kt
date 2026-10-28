@@ -22,6 +22,7 @@ data class FormularioUiState(
     val material: String = "",
     val pesoBruto: String = "",
     val tara: String = "",
+    val humedad: String = "",
     val observacion: String = "",
     val errores: Map<String, String> = emptyMap(),
     val guardando: Boolean = false,
@@ -59,6 +60,7 @@ class FormularioViewModel(
                     else it.copy(
                         cargando = false, esEdicion = true, material = pesaje.material,
                         pesoBruto = pesaje.pesoBruto.aTexto(), tara = pesaje.tara.aTexto(),
+                        humedad = pesaje.humedadEstimada?.aTexto().orEmpty(),
                         observacion = pesaje.observacion.orEmpty()
                     )
                 }
@@ -72,6 +74,7 @@ class FormularioViewModel(
     fun cambiarMaterial(v: String) = _estado.update { it.copy(material = v, errores = it.errores - "material") }
     fun cambiarPesoBruto(v: String) = _estado.update { it.copy(pesoBruto = v, errores = it.errores - "pesoBruto") }
     fun cambiarTara(v: String) = _estado.update { it.copy(tara = v, errores = it.errores - "tara" - "pesoBruto") }
+    fun cambiarHumedad(v: String) = _estado.update { it.copy(humedad = v, errores = it.errores - "humedadEstimada") }
     fun cambiarObservacion(v: String) = _estado.update { it.copy(observacion = v, errores = it.errores - "observacion") }
     fun descartarAviso() = _estado.update { it.copy(aviso = null) }
 
@@ -82,9 +85,9 @@ class FormularioViewModel(
         viewModelScope.launch {
             val id = pesajeId
             val resultado = if (id == null) {
-                registrarPesaje(puntoId, rutaId, actual.material, actual.pesoBruto, actual.tara, actual.observacion)
+                registrarPesaje(puntoId, rutaId, actual.material, actual.pesoBruto, actual.tara, actual.observacion, actual.humedad)
             } else {
-                corregirPesaje(id, actual.material, actual.pesoBruto, actual.tara, actual.observacion)
+                corregirPesaje(id, actual.material, actual.pesoBruto, actual.tara, actual.observacion, actual.humedad)
             }
             resultado.fold(
                 onSuccess = { _estado.update { it.copy(guardando = false, terminado = true) } },
