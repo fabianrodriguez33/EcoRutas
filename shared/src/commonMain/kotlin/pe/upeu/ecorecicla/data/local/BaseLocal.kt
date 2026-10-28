@@ -61,7 +61,7 @@ class BaseLocal(private val db: EcoDatabase) {
     fun insertarPesaje(p: Pesaje) = q.insertarPesaje(
         p.id, p.puntoId, p.rutaId, p.fechaHora, p.material, p.pesoBruto, p.tara, p.pesoNeto, p.operario,
         (p.estado is EstadoPesaje.Anulado).aEntero(), (p.estado as? EstadoPesaje.Anulado)?.motivo, p.observacion,
-        p.pendiente.aEntero(), p.errorEnvio
+        p.pendiente.aEntero(), p.errorEnvio, p.humedadEstimada
     )
 
     fun marcarRutaCerrada(id: Long) = q.marcarRutaCerrada(id)
@@ -110,10 +110,11 @@ private fun aPunto(
 private fun aPesaje(
     id: Long, puntoId: Long, rutaId: Long, fechaHora: String, material: String, bruto: Double, tara: Double,
     neto: Double, operario: String, anulado: Long, motivo: String?, observacion: String?,
-    pendiente: Long, errorEnvio: String?
+    pendiente: Long, errorEnvio: String?, humedad: Double?
 ) = Pesaje(
     id = id, puntoId = puntoId, fechaHora = fechaHora, material = material, pesoBruto = bruto, tara = tara,
     pesoNeto = neto, operario = operario,
     estado = if (anulado == 1L) EstadoPesaje.Anulado(motivo ?: "Sin motivo") else EstadoPesaje.Registrado,
-    pendiente = pendiente == 1L, rutaId = rutaId, observacion = observacion, errorEnvio = errorEnvio
+    pendiente = pendiente == 1L, rutaId = rutaId, observacion = observacion, errorEnvio = errorEnvio,
+    humedadEstimada = humedad
 )

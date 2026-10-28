@@ -1,0 +1,2 @@
+-- Migracion 1 a 2 (SC-C): humedad estimada del pesaje.
+ALTER TABLE pesaje_local ADD COLUMN humedad_estimada REAL;

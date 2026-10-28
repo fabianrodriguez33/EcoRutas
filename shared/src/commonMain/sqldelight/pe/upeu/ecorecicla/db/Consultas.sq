@@ -34,7 +34,8 @@ CREATE TABLE pesaje_local (
     motivo_anulacion TEXT,
     observacion TEXT,
     pendiente INTEGER NOT NULL DEFAULT 0,
-    error_envio TEXT
+    error_envio TEXT,
+    humedad_estimada REAL
 );
 
 CREATE INDEX pesaje_local_punto ON pesaje_local(punto_id);
@@ -87,8 +88,8 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 insertarPesaje:
 INSERT OR REPLACE INTO pesaje_local(id, punto_id, ruta_id, fecha_hora, material, peso_bruto, tara, peso_neto, operario,
-    anulado, motivo_anulacion, observacion, pendiente, error_envio)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    anulado, motivo_anulacion, observacion, pendiente, error_envio, humedad_estimada)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 marcarRutaCerrada:
 UPDATE ruta_local SET cerrada = 1 WHERE id = ?;
