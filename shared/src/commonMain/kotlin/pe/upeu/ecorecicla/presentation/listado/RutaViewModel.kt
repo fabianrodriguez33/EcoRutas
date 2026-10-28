@@ -21,6 +21,7 @@ import pe.upeu.ecorecicla.domain.model.ResumenSync
 import pe.upeu.ecorecicla.domain.model.RutaInfo
 import pe.upeu.ecorecicla.domain.usecase.CerrarRutaUseCase
 import pe.upeu.ecorecicla.domain.usecase.ObservarConexionUseCase
+import pe.upeu.ecorecicla.domain.usecase.ObservarPendientesUseCase
 import pe.upeu.ecorecicla.domain.usecase.ObservarPuntosUseCase
 import pe.upeu.ecorecicla.domain.usecase.ObservarRutaUseCase
 import pe.upeu.ecorecicla.domain.usecase.ObservarSesionUseCase
@@ -40,7 +41,8 @@ data class RutaUiState(
     val permiteReintento: Boolean = false,
     val aviso: String? = null,
     val puedeCerrarRuta: Boolean = false,
-    val usuario: String = ""
+    val usuario: String = "",
+    val pendientes: Int = 0
 ) {
     /** Carga inicial: se está trayendo la ruta por primera vez y aún no hay nada local que mostrar. */
     val cargando: Boolean get() = sincronizando && ruta == null
@@ -60,6 +62,7 @@ class RutaViewModel(
     observarRuta: ObservarRutaUseCase,
     observarPuntos: ObservarPuntosUseCase,
     observarSesion: ObservarSesionUseCase,
+    observarPendientes: ObservarPendientesUseCase,
     observarConexion: ObservarConexionUseCase,
     private val sincronizar: SincronizarUseCase,
     private val cerrarRuta: CerrarRutaUseCase,
@@ -88,6 +91,9 @@ class RutaViewModel(
             puedeCerrarRuta = sesion?.tiene(Privilegios.RUTA_CERRAR) == true && ruta != null && !ruta.cerrada,
             usuario = sesion?.nombre.orEmpty()
         )
+    }.combine(observarPendientes()) { estado, pendientes ->
+        // El número sale de una consulta observable de la base local, no de un contador en el ViewModel.
+        estado.copy(pendientes = pendientes)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RutaUiState())
 
     init {

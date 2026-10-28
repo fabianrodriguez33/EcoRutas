@@ -83,7 +83,7 @@ val presentationModule = module {
     single { Navegador() }
     viewModel { RaizViewModel(get(), get(), get()) }
     viewModel { LoginViewModel(get()) }
-    viewModel { RutaViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { RutaViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { DetalleViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { FormularioViewModel(get(), get(), get(), get(), get()) }
     viewModel { PerfilViewModel(get(), get(), get()) }
