@@ -8,7 +8,7 @@ interface RutaRepository {
     fun observarRuta(): Flow<RutaInfo?>
 
     /** Puntos de la ruta en orden de visita, leídos de la base local y filtrados por [texto]. */
-    fun observarPuntos(texto: String = ""): Flow<List<PuntoAcopio>>
+    fun observarPuntos(texto: String = "", soloPendientes: Boolean = false): Flow<List<PuntoAcopio>>
 
     fun observarPunto(id: Long): Flow<PuntoAcopio?>
 

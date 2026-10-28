@@ -11,7 +11,8 @@ class ObservarRutaUseCase(private val repositorio: RutaRepository) {
 }
 
 class ObservarPuntosUseCase(private val repositorio: RutaRepository) {
-    operator fun invoke(texto: String = ""): Flow<List<PuntoAcopio>> = repositorio.observarPuntos(texto.trim())
+    operator fun invoke(texto: String = "", soloPendientes: Boolean = false): Flow<List<PuntoAcopio>> =
+        repositorio.observarPuntos(texto.trim(), soloPendientes)
 }
 
 class ObservarPuntoUseCase(private val repositorio: RutaRepository) {

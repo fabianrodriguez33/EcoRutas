@@ -14,7 +14,8 @@ class RutaRepositoryImpl(private val api: ServicioApi, private val base: BaseLoc
 
     override fun observarRuta(): Flow<RutaInfo?> = base.observarRuta()
 
-    override fun observarPuntos(texto: String): Flow<List<PuntoAcopio>> = base.observarPuntos(texto)
+    override fun observarPuntos(texto: String, soloPendientes: Boolean): Flow<List<PuntoAcopio>> =
+        base.observarPuntos(texto, soloPendientes)
 
     override fun observarPunto(id: Long): Flow<PuntoAcopio?> = base.observarPunto(id)
 
