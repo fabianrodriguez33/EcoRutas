@@ -4,8 +4,8 @@ package pe.upeu.ecorecicla.data.remote
 class ApiConfig(
     val urlBase: String = URL_EMULADOR,
     val depuracion: Boolean = false,
-    val tiempoConexionMs: Long = 5_000,
-    val tiempoPeticionMs: Long = 15_000
+    val tiempoConexionMs: Long = 15_000,
+    val tiempoPeticionMs: Long = 30_000
 ) {
     companion object {
         /** El emulador de Android expone el equipo anfitrión en 10.0.2.2. Para un teléfono físico use la IP de la PC. */
