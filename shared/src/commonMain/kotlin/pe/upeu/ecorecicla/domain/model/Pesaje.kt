@@ -13,5 +13,6 @@ data class Pesaje(
     val pendiente: Boolean,
     val rutaId: Long = 0,
     val observacion: String? = null,
-    val errorEnvio: String? = null
+    val errorEnvio: String? = null,
+    val humedadEstimada: Double? = null   // porcentaje de 0 a 100; opcional
 )

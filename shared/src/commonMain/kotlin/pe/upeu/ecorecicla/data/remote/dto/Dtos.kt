@@ -63,7 +63,8 @@ data class PesajeDto(
     val operario: String,
     @SerialName("anulado") val estaAnulado: Boolean = false,
     val motivoAnulacion: String? = null,
-    val observacion: String? = null
+    val observacion: String? = null,
+    val humedadEstimada: Double? = null
 )
 
 /** Envoltorio de paginación común a todos los listados del servicio. */
@@ -84,7 +85,8 @@ data class PesajeCrearDto(
     val material: String,
     val pesoBruto: Double,
     val tara: Double,
-    val observacion: String? = null
+    val observacion: String? = null,
+    val humedadEstimada: Double? = null
 )
 
 @Serializable
@@ -92,7 +94,8 @@ data class PesajeEditarDto(
     val material: String,
     val pesoBruto: Double,
     val tara: Double,
-    val observacion: String? = null
+    val observacion: String? = null,
+    val humedadEstimada: Double? = null
 )
 
 /** Formato de error común del servicio. */
@@ -118,5 +121,5 @@ fun PesajeDto.aDominio(): Pesaje = Pesaje(
     id = id, puntoId = puntoId, fechaHora = fechaHora, material = material, pesoBruto = pesoBruto, tara = tara,
     pesoNeto = pesoNeto, operario = operario,
     estado = if (estaAnulado) EstadoPesaje.Anulado(motivoAnulacion ?: "Sin motivo") else EstadoPesaje.Registrado,
-    pendiente = false, rutaId = rutaId, observacion = observacion
+    pendiente = false, rutaId = rutaId, observacion = observacion, humedadEstimada = humedadEstimada
 )
