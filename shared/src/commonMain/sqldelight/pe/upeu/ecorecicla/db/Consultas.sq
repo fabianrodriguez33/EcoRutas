@@ -1,0 +1,112 @@
+-- Esquema local derivado del modelo de dominio (sección 4.5).
+-- ruta_local guarda la ruta del día; punto_local sus puntos con la secuencia de visita;
+-- pesaje_local los pesajes, con la marca de pendiente y el identificador provisional negativo.
+
+CREATE TABLE ruta_local (
+    id INTEGER NOT NULL PRIMARY KEY,
+    fecha TEXT NOT NULL,
+    cerrada INTEGER NOT NULL DEFAULT 0,
+    ultima_sincronizacion INTEGER
+);
+
+CREATE TABLE punto_local (
+    id INTEGER NOT NULL PRIMARY KEY,
+    ruta_id INTEGER NOT NULL,
+    razon_social TEXT NOT NULL,
+    direccion TEXT NOT NULL,
+    zona TEXT NOT NULL,
+    material_habitual TEXT NOT NULL,
+    secuencia INTEGER NOT NULL,
+    atendido INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE pesaje_local (
+    id INTEGER NOT NULL PRIMARY KEY,
+    punto_id INTEGER NOT NULL,
+    ruta_id INTEGER NOT NULL,
+    fecha_hora TEXT NOT NULL,
+    material TEXT NOT NULL,
+    peso_bruto REAL NOT NULL,
+    tara REAL NOT NULL,
+    peso_neto REAL NOT NULL,
+    operario TEXT NOT NULL,
+    anulado INTEGER NOT NULL DEFAULT 0,
+    motivo_anulacion TEXT,
+    observacion TEXT,
+    pendiente INTEGER NOT NULL DEFAULT 0,
+    error_envio TEXT
+);
+
+CREATE INDEX pesaje_local_punto ON pesaje_local(punto_id);
+CREATE INDEX pesaje_local_pendiente ON pesaje_local(pendiente);
+
+-- Un punto cuenta como atendido si el servicio lo marcó así o si hay un pesaje vigente local (incluso pendiente).
+CREATE VIEW punto_estado AS
+SELECT p.id, p.ruta_id, p.razon_social, p.direccion, p.zona, p.material_habitual, p.secuencia,
+       CAST(CASE WHEN p.atendido = 1 OR EXISTS (
+           SELECT 1 FROM pesaje_local s WHERE s.punto_id = p.id AND s.ruta_id = p.ruta_id AND s.anulado = 0
+       ) THEN 1 ELSE 0 END AS INTEGER) AS atendido
+FROM punto_local p;
+
+observarRuta:
+SELECT * FROM ruta_local LIMIT 1;
+
+observarPuntos:
+SELECT * FROM punto_estado
+WHERE :texto = '' OR razon_social LIKE '%' || :texto || '%' OR direccion LIKE '%' || :texto || '%' OR zona LIKE '%' || :texto || '%'
+ORDER BY secuencia;
+
+observarPunto:
+SELECT * FROM punto_estado WHERE id = ?;
+
+observarPesajesDePunto:
+SELECT * FROM pesaje_local WHERE punto_id = ? ORDER BY fecha_hora DESC, id DESC;
+
+observarPesaje:
+SELECT * FROM pesaje_local WHERE id = ?;
+
+pesajePorId:
+SELECT * FROM pesaje_local WHERE id = ?;
+
+idsPendientes:
+SELECT id FROM pesaje_local WHERE pendiente = 1 ORDER BY fecha_hora, id;
+
+contarPendientes:
+SELECT COUNT(*) FROM pesaje_local WHERE pendiente = 1;
+
+-- Siguiente identificador provisional: siempre negativo, también con la tabla vacía (MIN devuelve NULL).
+siguienteIdLocal:
+SELECT COALESCE(MIN(id), 0) - 1 FROM pesaje_local WHERE id < 0;
+
+insertarRuta:
+INSERT OR REPLACE INTO ruta_local(id, fecha, cerrada, ultima_sincronizacion) VALUES (?, ?, ?, ?);
+
+insertarPunto:
+INSERT OR REPLACE INTO punto_local(id, ruta_id, razon_social, direccion, zona, material_habitual, secuencia, atendido)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+insertarPesaje:
+INSERT OR REPLACE INTO pesaje_local(id, punto_id, ruta_id, fecha_hora, material, peso_bruto, tara, peso_neto, operario,
+    anulado, motivo_anulacion, observacion, pendiente, error_envio)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+marcarRutaCerrada:
+UPDATE ruta_local SET cerrada = 1 WHERE id = ?;
+
+marcarErrorEnvio:
+UPDATE pesaje_local SET error_envio = ? WHERE id = ?;
+
+eliminarPesaje:
+DELETE FROM pesaje_local WHERE id = ?;
+
+eliminarPesajesSincronizados:
+DELETE FROM pesaje_local WHERE pendiente = 0;
+
+eliminarPuntos:
+DELETE FROM punto_local;
+
+eliminarRutas:
+DELETE FROM ruta_local;
+
+eliminarPesajes:
+DELETE FROM pesaje_local;
