@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -142,6 +143,10 @@ private fun BarraSincronizacion(estado: RutaUiState, viewModel: RutaViewModel) {
             singleLine = true,
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
         )
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            Switch(checked = estado.soloPendientes, onCheckedChange = viewModel::filtrarPendientes)
+            Text("Solo pendientes de pesar", modifier = Modifier.padding(start = 8.dp))
+        }
     }
 }
 
@@ -163,7 +168,7 @@ private fun ContenidoRuta(estado: RutaUiState, viewModel: RutaViewModel, alAbrir
     if (estado.puntos.isEmpty()) {
         Centrado {
             Text(
-                if (estado.busqueda.isBlank()) "La ruta no tiene puntos de acopio" else "Ningún punto coincide con la búsqueda",
+                if (estado.busqueda.isBlank() && !estado.soloPendientes) "La ruta no tiene puntos de acopio" else "Ningún punto coincide con el filtro",
                 style = MaterialTheme.typography.bodyLarge
             )
         }

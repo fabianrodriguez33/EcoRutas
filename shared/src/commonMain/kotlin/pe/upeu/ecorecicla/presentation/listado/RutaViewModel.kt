@@ -33,6 +33,7 @@ data class RutaUiState(
     val ruta: RutaInfo? = null,
     val puntos: List<PuntoAcopio> = emptyList(),
     val busqueda: String = "",
+    val soloPendientes: Boolean = false,
     val sincronizando: Boolean = false,
     val resumen: ResumenSync? = null,
     val ultimaSincronizacion: String? = null,
@@ -67,17 +68,21 @@ class RutaViewModel(
 ) : ViewModel() {
 
     private val busqueda = MutableStateFlow("")
+    private val soloPendientes = MutableStateFlow(false)
     private val transitorio = MutableStateFlow(Transitorio())
 
-    private val puntos = busqueda.flatMapLatest { observarPuntos(it) }
+    private val puntos = combine(busqueda, soloPendientes) { texto, pendientes -> texto to pendientes }
+        .flatMapLatest { (texto, pendientes) -> observarPuntos(texto, pendientes) }
 
     val estado: StateFlow<RutaUiState> = combine(
         observarRuta(), puntos, busqueda, transitorio, observarSesion()
     ) { ruta, lista, texto, temporal, sesion ->
+        val filtroPendientes = soloPendientes.value
         RutaUiState(
             ruta = ruta,
             puntos = lista,
             busqueda = texto,
+            soloPendientes = filtroPendientes,
             sincronizando = temporal.sincronizando,
             resumen = temporal.resumen,
             ultimaSincronizacion = ruta?.ultimaSincronizacion?.let { reloj.formatearHora(it) },
@@ -99,6 +104,10 @@ class RutaViewModel(
 
     fun buscar(texto: String) {
         busqueda.value = texto
+    }
+
+    fun filtrarPendientes(activo: Boolean) {
+        soloPendientes.value = activo
     }
 
     fun reintentar() = sincronizarAhora()
