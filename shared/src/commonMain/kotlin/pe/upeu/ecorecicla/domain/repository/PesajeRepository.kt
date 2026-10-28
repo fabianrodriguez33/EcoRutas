@@ -13,11 +13,13 @@ interface PesajeRepository {
 
     /** Guarda el pesaje en la base local como pendiente y lo envía si hay conexión. */
     suspend fun registrar(
-        puntoId: Long, rutaId: Long, material: String, pesoBruto: Double, tara: Double, observacion: String?
+        puntoId: Long, rutaId: Long, material: String, pesoBruto: Double, tara: Double, observacion: String?,
+        humedadEstimada: Double? = null
     ): ResultadoRegistro
 
     suspend fun corregir(
-        id: Long, material: String, pesoBruto: Double, tara: Double, observacion: String?
+        id: Long, material: String, pesoBruto: Double, tara: Double, observacion: String?,
+        humedadEstimada: Double? = null
     ): ResultadoRegistro
 
     suspend fun anular(id: Long, motivo: String): ResultadoRegistro

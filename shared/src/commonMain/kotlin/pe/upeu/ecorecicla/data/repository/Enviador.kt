@@ -28,14 +28,17 @@ class Enviador(private val api: ServicioApi, private val base: BaseLocal) {
         val anulado = fila.estado as? EstadoPesaje.Anulado
         val definitivo: Pesaje = when {
             fila.id < 0 -> api.crearPesaje(
-                PesajeCrearDto(fila.rutaId, fila.puntoId, fila.material, fila.pesoBruto, fila.tara, fila.observacion)
+                PesajeCrearDto(
+                    fila.rutaId, fila.puntoId, fila.material, fila.pesoBruto, fila.tara, fila.observacion,
+                    fila.humedadEstimada
+                )
             ).aDominio()
             anulado != null -> {
                 api.anularPesaje(fila.id, anulado.motivo)
                 fila.copy(pendiente = false, errorEnvio = null)
             }
             else -> api.editarPesaje(
-                fila.id, PesajeEditarDto(fila.material, fila.pesoBruto, fila.tara, fila.observacion)
+                fila.id, PesajeEditarDto(fila.material, fila.pesoBruto, fila.tara, fila.observacion, fila.humedadEstimada)
             ).aDominio()
         }
         // La fila provisional se sustituye por la definitiva dentro de la misma transacción.

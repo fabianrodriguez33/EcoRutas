@@ -31,7 +31,8 @@ class PesajeRepositoryImpl(
     override fun observarPendientes(): Flow<Int> = base.observarPendientes()
 
     override suspend fun registrar(
-        puntoId: Long, rutaId: Long, material: String, pesoBruto: Double, tara: Double, observacion: String?
+        puntoId: Long, rutaId: Long, material: String, pesoBruto: Double, tara: Double, observacion: String?,
+        humedadEstimada: Double?
     ): ResultadoRegistro {
         val sesion = sesionActual.sesion.value ?: throw ErrorApi.NoAutorizado()
         val id = withContext(Dispatchers.Default) {
@@ -40,7 +41,8 @@ class PesajeRepositoryImpl(
                 Pesaje(
                     id = provisional, puntoId = puntoId, fechaHora = reloj.ahoraIso(), material = material,
                     pesoBruto = pesoBruto, tara = tara, pesoNeto = neto(pesoBruto, tara), operario = sesion.usuario,
-                    estado = EstadoPesaje.Registrado, pendiente = true, rutaId = rutaId, observacion = observacion
+                    estado = EstadoPesaje.Registrado, pendiente = true, rutaId = rutaId, observacion = observacion,
+                    humedadEstimada = humedadEstimada
                 )
             )
             provisional
@@ -49,7 +51,8 @@ class PesajeRepositoryImpl(
     }
 
     override suspend fun corregir(
-        id: Long, material: String, pesoBruto: Double, tara: Double, observacion: String?
+        id: Long, material: String, pesoBruto: Double, tara: Double, observacion: String?,
+        humedadEstimada: Double?
     ): ResultadoRegistro {
         val previo = withContext(Dispatchers.Default) { base.pesajePorId(id) }
             ?: throw ErrorApi.NoEncontrado("El pesaje ya no existe")
@@ -58,7 +61,7 @@ class PesajeRepositoryImpl(
             base.insertarPesaje(
                 previo.copy(
                     material = material, pesoBruto = pesoBruto, tara = tara, pesoNeto = neto(pesoBruto, tara),
-                    observacion = observacion, pendiente = true, errorEnvio = null
+                    observacion = observacion, humedadEstimada = humedadEstimada, pendiente = true, errorEnvio = null
                 )
             )
         }
