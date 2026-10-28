@@ -74,6 +74,15 @@ fun RutaScreen(viewModel: RutaViewModel = koinViewModel(), navegador: Navegador 
                     }
                 },
                 actions = {
+                    if (estado.pendientes > 0) {
+                        Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.tertiaryContainer) {
+                            Text(
+                                "${estado.pendientes} por sincronizar",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
                     TextButton(onClick = { navegador.ir(Destino.Perfil) }) { Text("Perfil") }
                 }
             )
