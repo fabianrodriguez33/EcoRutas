@@ -1,6 +1,7 @@
 package pe.upeu.ecorecicla
 
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.decodeFromString
 import pe.upeu.ecorecicla.data.local.TokenJwt
@@ -132,6 +133,16 @@ class PruebasEcoRutas {
         assertTrue(escenario.base.idsPendientes().isEmpty())
         assertNull(escenario.base.pesajePorId(-1), "la fila provisional se sustituyó")
         assertEquals(false, escenario.base.pesajePorId(99)?.pendiente, "la definitiva quedó una sola vez")
+    }
+
+    @Test
+    fun elContadorDePendientesSaleDeLaConsultaObservable() = runTest {
+        val escenario = Escenario { throw RuntimeException("sin red") }
+        escenario.iniciarSesionComoOperario()
+        assertEquals(0, escenario.base.observarPendientes().first())
+        escenario.pesajes.registrar(3, 1, "Papel", 50.0, 5.0, null)
+        escenario.pesajes.registrar(3, 1, "Carton", 20.0, 2.0, null)
+        assertEquals(2, escenario.base.observarPendientes().first())
     }
 
     @OptIn(ExperimentalEncodingApi::class)
